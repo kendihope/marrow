@@ -593,7 +593,8 @@ a:hover {
   .btn {
     transition: none;
   }
-   /* Cover photos: same 2:3 shape as the CSS covers, which remain the fallback */
+   
+/* Cover photos: same 2:3 shape as the CSS covers, which remain the fallback */
 .cover-img {
   display: block;
   width: 100%;
@@ -603,9 +604,4 @@ a:hover {
   border-radius: 0.15rem var(--radius) var(--radius) 0.15rem;
   background: var(--line);
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
-}
-
-  .btn:active {
-    transform: none;
-  }
 }
