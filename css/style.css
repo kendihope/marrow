@@ -431,3 +431,89 @@ a:hover {
 .book__note-by::before {
   content: "\2014\00a0";
 }
+/* Events: Grid for the list, Flexbox inside each event -------------------- */
+.events {
+  padding-block: var(--space-6);
+  background: var(--ink);
+  color: var(--paper);
+  scroll-margin-top: var(--space-3);
+}
+
+.events .section-head p {
+  color: #c9d4dd;
+}
+
+.event-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: var(--space-4);
+}
+
+.event {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid #3d4e60;
+  border-radius: var(--radius);
+}
+
+.event__date {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4.5rem;
+  border-radius: var(--radius);
+  background: var(--marigold);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  line-height: 1;
+}
+
+.event__month {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.event__day {
+  margin-top: var(--space-1);
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.event__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.event__title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.event__meta {
+  color: #c9d4dd;
+  font-size: 0.9rem;
+}
+
+.events .btn {
+  margin-top: var(--space-1);
+  border-color: var(--marigold);
+  color: var(--marigold);
+}
+
+.events .btn:hover {
+  background: var(--marigold);
+  color: var(--ink);
+}
+
+.events :focus-visible {
+  outline-color: var(--marigold);
+}
