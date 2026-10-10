@@ -557,3 +557,44 @@ a:hover {
   align-items: center;
   min-height: 2.75rem;
 }
+/* Small screens: tighter nav so five links wrap evenly --------------------- */
+@media (max-width: 30em) {
+  .site-nav__list a {
+    padding-inline: 0.4rem;
+    font-size: 0.95rem;
+  }
+
+  .event {
+    flex-direction: column;
+  }
+
+  .event__date {
+    flex-direction: row;
+    gap: var(--space-2);
+    width: auto;
+    height: auto;
+    align-self: flex-start;
+    padding: var(--space-1) var(--space-3);
+  }
+
+  .event__day {
+    margin-top: 0;
+  }
+}
+
+/* Motion: smooth jumps only for people who haven't asked for less ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+
+  .btn:active {
+    transform: none;
+  }
+}
