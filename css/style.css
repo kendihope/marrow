@@ -517,3 +517,43 @@ a:hover {
 .events :focus-visible {
   outline-color: var(--marigold);
 }
+/* Footer ------------------------------------------------------------------ */
+.site-footer {
+  padding-block: var(--space-5);
+  background: var(--spruce-deep);
+  color: var(--paper);
+  scroll-margin-top: var(--space-3);
+}
+
+.site-footer a {
+  color: var(--paper);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+}
+
+.site-footer h2 {
+  margin-bottom: var(--space-2);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+}
+
+.site-footer address {
+  font-style: normal;
+}
+
+.site-footer__legal {
+  flex-basis: 100%;
+  padding-top: var(--space-3);
+  border-top: 1px solid rgb(255 255 255 / 0.25);
+  font-size: 0.85rem;
+}
+
+.site-footer address a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
