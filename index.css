@@ -47,6 +47,7 @@
         </div>
       </div>
     </section>
+
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
       <div class="shell hero__inner">
@@ -375,6 +376,100 @@
               <p>Priya Nair talks about <em>How Rooms Remember</em> and the buildings behind it.</p>
               <a class="btn" href="mailto:events@marrowstreet.example?subject=Seat%3A%20Nonfiction%20night" aria-label="Save a seat at nonfiction night">Save a seat</a>
             </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section class="catalog" id="fiction" aria-labelledby="fiction-title">
+      <div class="shell">
+        <div class="section-head">
+          <h2 id="fiction-title">Fiction</h2>
+          <p>Novels and story collections we've read, argued over, and kept on the front table.</p>
+        </div>
+        <ul class="book-grid">
+          <li>
+            <article class="book">
+              <div class="cover cover--spruce" aria-hidden="true">
+                <span class="cover__title">The Lighthouse Inventory</span>
+                <span class="cover__author">Mara Eldridge</span>
+              </div>
+              <h3 class="book__title">The Lighthouse Inventory</h3>
+              <p class="book__author">Mara Eldridge</p>
+              <p class="book__buy">
+                <span class="book__price">$18</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20The%20Lighthouse%20Inventory" aria-label="Hold a copy of The Lighthouse Inventory">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+          <li>
+            <article class="book">
+              <div class="cover cover--plum" aria-hidden="true">
+                <span class="cover__title">A Winter of Small Fires</span>
+                <span class="cover__author">Teodor Vance</span>
+              </div>
+              <h3 class="book__title">A Winter of Small Fires</h3>
+              <p class="book__author">Teodor Vance</p>
+              <p class="book__buy">
+                <span class="book__price">$17</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20A%20Winter%20of%20Small%20Fires" aria-label="Hold a copy of A Winter of Small Fires">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+          <li>
+            <article class="book">
+              <div class="cover cover--marigold" aria-hidden="true">
+                <span class="cover__title">The Salt Orchard</span>
+                <span class="cover__author">Ines Okafor</span>
+              </div>
+              <h3 class="book__title">The Salt Orchard</h3>
+              <p class="book__author">Ines Okafor</p>
+              <p class="book__buy">
+                <span class="book__price">$16</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20The%20Salt%20Orchard" aria-label="Hold a copy of The Salt Orchard">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+          <li>
+            <article class="book">
+              <div class="cover cover--tide" aria-hidden="true">
+                <span class="cover__title">Nine Tides</span>
+                <span class="cover__author">Hollis Grey</span>
+              </div>
+              <h3 class="book__title">Nine Tides</h3>
+              <p class="book__author">Hollis Grey</p>
+              <p class="book__buy">
+                <span class="book__price">$19</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20Nine%20Tides" aria-label="Hold a copy of Nine Tides">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+          <li>
+            <article class="book">
+              <div class="cover cover--cherry" aria-hidden="true">
+                <span class="cover__title">What the River Kept</span>
+                <span class="cover__author">Dalia Rensburg</span>
+              </div>
+              <h3 class="book__title">What the River Kept</h3>
+              <p class="book__author">Dalia Rensburg</p>
+              <p class="book__buy">
+                <span class="book__price">$15</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20What%20the%20River%20Kept" aria-label="Hold a copy of What the River Kept">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+          <li>
+            <article class="book">
+              <div class="cover cover--ink" aria-hidden="true">
+                <span class="cover__title">The Understudy's Almanac</span>
+                <span class="cover__author">Jun-seo Park</span>
+              </div>
+              <h3 class="book__title">The Understudy's Almanac</h3>
+              <p class="book__author">Jun-seo Park</p>
+              <p class="book__buy">
+                <span class="book__price">$20</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20The%20Understudy%27s%20Almanac" aria-label="Hold a copy of The Understudy's Almanac">Hold a copy</a>
+              </p>
+            </article>
           </li>
         </ul>
       </div>
