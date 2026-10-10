@@ -568,6 +568,76 @@
         </ul>
       </div>
     </section>
+    <section class="catalog catalog--picks" id="staff-picks" aria-labelledby="staff-picks-title">
+      <div class="shell">
+        <div class="section-head">
+          <h2 id="staff-picks-title">Staff picks</h2>
+          <p>Four books the people who work here keep handing across the counter.</p>
+        </div>
+        <ul class="book-grid">
+          <li>
+            <article class="book">
+              <div class="cover cover--tide" aria-hidden="true">
+                <span class="cover__title">Borrowed Weather</span>
+                <span class="cover__author">Cass Whitlow</span>
+              </div>
+              <h3 class="book__title">Borrowed Weather</h3>
+              <p class="book__author">Cass Whitlow</p>
+              <p class="book__note"><span class="book__note-text">I finished it on the bus and rode three stops past mine.</span> <strong class="book__note-by">Amara</strong></p>
+              <p class="book__buy">
+                <span class="book__price">$18</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20Borrowed%20Weather" aria-label="Hold a copy of Borrowed Weather">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+          <li>
+            <article class="book">
+              <div class="cover cover--ink" aria-hidden="true">
+                <span class="cover__title">The Quiet Engine</span>
+                <span class="cover__author">Rafael Ortiz</span>
+              </div>
+              <h3 class="book__title">The Quiet Engine</h3>
+              <p class="book__author">Rafael Ortiz</p>
+              <p class="book__note"><span class="book__note-text">The best argument I know for fixing things instead of replacing them.</span> <strong class="book__note-by">Leo</strong></p>
+              <p class="book__buy">
+                <span class="book__price">$26</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20The%20Quiet%20Engine" aria-label="Hold a copy of The Quiet Engine">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+          <li>
+            <article class="book">
+              <div class="cover cover--marigold" aria-hidden="true">
+                <span class="cover__title">Orchard Season</span>
+                <span class="cover__author">Nell Hartigan</span>
+              </div>
+              <h3 class="book__title">Orchard Season</h3>
+              <p class="book__author">Nell Hartigan</p>
+              <p class="book__note"><span class="book__note-text">I reread it every September. It gets better each time.</span> <strong class="book__note-by">Dee</strong></p>
+              <p class="book__buy">
+                <span class="book__price">$17</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20Orchard%20Season" aria-label="Hold a copy of Orchard Season">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+          <li>
+            <article class="book">
+              <div class="cover cover--plum" aria-hidden="true">
+                <span class="cover__title">Letters to a Younger Cartographer</span>
+                <span class="cover__author">Wen Zhao</span>
+              </div>
+              <h3 class="book__title">Letters to a Younger Cartographer</h3>
+              <p class="book__author">Wen Zhao</p>
+              <p class="book__note"><span class="book__note-text">Short, strange, and the one I press into people&#x27;s hands.</span> <strong class="book__note-by">Sam</strong></p>
+              <p class="book__buy">
+                <span class="book__price">$22</span>
+                <a class="btn" href="mailto:books@marrowstreet.example?subject=Hold%3A%20Letters%20to%20a%20Younger%20Cartographer" aria-label="Hold a copy of Letters to a Younger Cartographer">Hold a copy</a>
+              </p>
+            </article>
+          </li>
+        </ul>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer" id="visit">
