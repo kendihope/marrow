@@ -154,3 +154,112 @@ a:hover {
 .site-nav__list a:active {
   border-bottom-color: var(--spruce);
 }
+/* Buttons ----------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--spruce);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--spruce);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 120ms ease-out, color 120ms ease-out, transform 80ms ease-out;
+}
+
+.btn:hover {
+  background: var(--spruce);
+  color: var(--paper);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn--solid {
+  background: var(--spruce);
+  color: var(--paper);
+}
+
+.btn--solid:hover {
+  background: var(--spruce-deep);
+  border-color: var(--spruce-deep);
+}
+
+/* Hero: text beside a shelf of spines ------------------------------------- */
+.hero {
+  padding-block: var(--space-5) 0;
+  border-bottom: 6px solid var(--ink);
+}
+
+.hero__inner {
+  display: grid;
+  gap: var(--space-5);
+  align-items: end;
+}
+
+.hero__text {
+  padding-bottom: var(--space-4);
+}
+
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2.25rem, 8vw + 0.5rem, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.hero__lede {
+  max-width: 34rem;
+  margin-top: var(--space-3);
+  font-size: 1.125rem;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.shelf {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.spine {
+  flex: 1 1 0;
+  min-width: 0;
+  height: var(--h);
+  border-radius: 0.2rem 0.2rem 0 0;
+  background: var(--spine-color, var(--ink));
+  /* a pale band near the top, like a printed spine label */
+  background-image: linear-gradient(
+    to bottom,
+    transparent 0.9rem,
+    rgb(255 255 255 / 0.35) 0.9rem,
+    rgb(255 255 255 / 0.35) 1.15rem,
+    transparent 1.15rem
+  );
+  background-color: var(--spine-color, var(--ink));
+}
+
+.spine--spruce   { --spine-color: var(--spruce); }
+.spine--marigold { --spine-color: var(--marigold); }
+.spine--plum     { --spine-color: var(--plum); }
+.spine--tide     { --spine-color: var(--tide); }
+.spine--cherry   { --spine-color: var(--cherry); }
+.spine--ink      { --spine-color: var(--ink); }
+
+@media (min-width: 52em) {
+  .hero__inner {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
