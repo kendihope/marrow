@@ -24,7 +24,29 @@
       </nav>
     </div>
   </header>
-
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="shell hero__inner">
+        <div class="hero__text">
+          <h1 id="hero-title">Books worth passing on.</h1>
+          <p class="hero__lede">A small independent bookshop with a short, well-argued shelf. Browse the fiction, the nonfiction, and what the staff won't stop recommending, then come to a reading.</p>
+          <p class="hero__actions">
+            <a class="btn btn--solid" href="#fiction">Browse fiction</a>
+            <a class="btn" href="#events">See events</a>
+          </p>
+        </div>
+        <div class="shelf" aria-hidden="true">
+          <span class="spine spine--spruce" style="--h: 11rem"></span>
+          <span class="spine spine--marigold" style="--h: 8.5rem"></span>
+          <span class="spine spine--plum" style="--h: 12.5rem"></span>
+          <span class="spine spine--tide" style="--h: 9.5rem"></span>
+          <span class="spine spine--cherry" style="--h: 11.5rem"></span>
+          <span class="spine spine--ink" style="--h: 8rem"></span>
+          <span class="spine spine--marigold" style="--h: 12rem"></span>
+          <span class="spine spine--spruce" style="--h: 9rem"></span>
+          <span class="spine spine--plum" style="--h: 10.5rem"></span>
+        </div>
+      </div>
+    </section>
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
       <div class="shell hero__inner">
