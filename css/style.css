@@ -70,6 +70,7 @@ img, svg {
   width: min(100% - 2rem, 72rem);
   margin-inline: auto;
 }
+
 /* Links and focus --------------------------------------------------------- */
 a {
   color: var(--spruce);
@@ -154,6 +155,7 @@ a:hover {
 .site-nav__list a:active {
   border-bottom-color: var(--spruce);
 }
+
 /* Buttons ----------------------------------------------------------------- */
 .btn {
   display: inline-flex;
@@ -263,6 +265,7 @@ a:hover {
     grid-template-columns: 1.15fr 0.85fr;
   }
 }
+
 /* Catalog sections -------------------------------------------------------- */
 .catalog {
   padding-block: var(--space-6);
@@ -389,6 +392,7 @@ a:hover {
   padding-inline: var(--space-3);
   font-size: 0.9rem;
 }
+
 /* Staff picks: same grid, plus a note from the bookseller ----------------- */
 .catalog--picks {
   background: var(--surface);
@@ -410,27 +414,7 @@ a:hover {
 .book__note-by::before {
   content: "\2014\00a0";
 }
-/* Staff picks: same grid, plus a note from the bookseller ----------------- */
-.catalog--picks {
-  background: var(--surface);
-}
 
-.book__note {
-  padding-left: var(--space-2);
-  border-left: 3px solid var(--marigold);
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-.book__note-by {
-  display: block;
-  margin-top: var(--space-1);
-  color: var(--spruce-deep);
-}
-
-.book__note-by::before {
-  content: "\2014\00a0";
-}
 /* Events: Grid for the list, Flexbox inside each event -------------------- */
 .events {
   padding-block: var(--space-6);
@@ -517,6 +501,7 @@ a:hover {
 .events :focus-visible {
   outline-color: var(--marigold);
 }
+
 /* Footer ------------------------------------------------------------------ */
 .site-footer {
   padding-block: var(--space-5);
@@ -552,11 +537,6 @@ a:hover {
   font-size: 0.85rem;
 }
 
-.site-footer address a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-}
 /* Small screens: tighter nav so five links wrap evenly --------------------- */
 @media (max-width: 30em) {
   .site-nav__list a {
@@ -593,7 +573,18 @@ a:hover {
   .btn {
     transition: none;
   }
-   
+
+  .btn:active {
+    transform: none;
+  }
+}
+
+.site-footer address a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
 /* Cover photos: same 2:3 shape as the CSS covers, which remain the fallback */
 .cover-img {
   display: block;
