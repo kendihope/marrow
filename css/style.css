@@ -70,3 +70,87 @@ img, svg {
   width: min(100% - 2rem, 72rem);
   margin-inline: auto;
 }
+/* Links and focus --------------------------------------------------------- */
+a {
+  color: var(--spruce);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--spruce-deep);
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-3);
+  top: -4rem;
+  z-index: 10;
+  padding: var(--space-2) var(--space-3);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius);
+}
+
+.skip-link:focus {
+  top: var(--space-3);
+  color: var(--paper);
+}
+
+/* Header and navigation (Flexbox) ----------------------------------------- */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: var(--space-4);
+  padding-block: var(--space-2);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: var(--spruce);
+}
+
+.site-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-1);
+}
+
+.site-nav__list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: var(--space-2);
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+
+.site-nav__list a:hover {
+  border-bottom-color: var(--marigold);
+}
+
+.site-nav__list a:active {
+  border-bottom-color: var(--spruce);
+}
