@@ -389,3 +389,45 @@ a:hover {
   padding-inline: var(--space-3);
   font-size: 0.9rem;
 }
+/* Staff picks: same grid, plus a note from the bookseller ----------------- */
+.catalog--picks {
+  background: var(--surface);
+}
+
+.book__note {
+  padding-left: var(--space-2);
+  border-left: 3px solid var(--marigold);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.book__note-by {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--spruce-deep);
+}
+
+.book__note-by::before {
+  content: "\2014\00a0";
+}
+/* Staff picks: same grid, plus a note from the bookseller ----------------- */
+.catalog--picks {
+  background: var(--surface);
+}
+
+.book__note {
+  padding-left: var(--space-2);
+  border-left: 3px solid var(--marigold);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.book__note-by {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--spruce-deep);
+}
+
+.book__note-by::before {
+  content: "\2014\00a0";
+}
