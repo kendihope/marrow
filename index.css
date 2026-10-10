@@ -638,7 +638,52 @@
         </ul>
       </div>
     </section>
-
+    <section class="events" id="events" aria-labelledby="events-title">
+      <div class="shell">
+        <div class="section-head">
+          <h2 id="events-title">Events</h2>
+          <p>Readings and book clubs in the back room. Free to attend; email us to save a seat.</p>
+        </div>
+        <ul class="event-list">
+          <li class="event">
+            <time class="event__date" datetime="2026-10-15T19:00">
+              <span class="event__month">Oct</span>
+              <span class="event__day">15</span>
+            </time>
+            <div class="event__body">
+              <h3 class="event__title">Reading: Ines Okafor</h3>
+              <p class="event__meta">Thursday, 7:00 pm</p>
+              <p>Ines reads from <em>The Salt Orchard</em>, then takes questions.</p>
+              <a class="btn" href="mailto:events@marrowstreet.example?subject=Seat%3A%20Ines%20Okafor%20reading" aria-label="Save a seat at the Ines Okafor reading">Save a seat</a>
+            </div>
+          </li>
+          <li class="event">
+            <time class="event__date" datetime="2026-10-24T11:00">
+              <span class="event__month">Oct</span>
+              <span class="event__day">24</span>
+            </time>
+            <div class="event__body">
+              <h3 class="event__title">Fiction book club</h3>
+              <p class="event__meta">Saturday, 11:00 am</p>
+              <p>We're discussing <em>Nine Tides</em>. Bring a question you can't answer.</p>
+              <a class="btn" href="mailto:events@marrowstreet.example?subject=Seat%3A%20Fiction%20book%20club" aria-label="Save a seat at the fiction book club">Save a seat</a>
+            </div>
+          </li>
+          <li class="event">
+            <time class="event__date" datetime="2026-11-04T18:30">
+              <span class="event__month">Nov</span>
+              <span class="event__day">4</span>
+            </time>
+            <div class="event__body">
+              <h3 class="event__title">Nonfiction night</h3>
+              <p class="event__meta">Wednesday, 6:30 pm</p>
+              <p>Priya Nair talks about <em>How Rooms Remember</em> and the buildings behind it.</p>
+              <a class="btn" href="mailto:events@marrowstreet.example?subject=Seat%3A%20Nonfiction%20night" aria-label="Save a seat at nonfiction night">Save a seat</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer" id="visit">
