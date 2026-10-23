@@ -1,44 +1,35 @@
-# marrow
 # Marrow Street Books
 
-A single-page site for an independent bookstore. Plain HTML5 and CSS3, no frameworks, no build step, no JavaScript.
+A React and Tailwind shop with an Express and PostgreSQL API.
 
-## Sections
+## Project map
 
-- **Hero** with a Flexbox shelf of book spines
-- **Fiction** and **Nonfiction**: a product grid of book cards
-- **Staff picks**: the same grid, with a short note from a bookseller on each card
-- **Events**: readings and book clubs
-- **Visit**: address and hours in the footer
+- `client/` is the React/Vite storefront and its styles.
+- `server/src/server.js` is the Express API and serves the built client in production.
+- `server/db/schema.sql` creates the database tables.
+- `server/src/seed-data.js` is the readable catalog and event seed data.
+- `server/src/seed.js` creates the schema and inserts or updates the starter catalog.
 
-## Run it
+The database tables are `users`, `products`, `events`, `newsletter_subscribers`, `orders`, and `order_items`. The session library creates `user_sessions`. Orders belong to a signed-in user, and order items keep the price that was requested. Newsletter addresses are unique so repeat signups do not create duplicates.
 
-Open `index.html` in a browser. Nothing to install.
+## Local setup
 
-## Structure
+1. Create a Supabase project. In its dashboard, choose **Connect → Session pooler** and copy the PostgreSQL connection string. Replace the password placeholder with the database password; URL-encode reserved password characters.
+2. Add the Supabase connection string to `DATABASE_URL` in the existing root `.env` file. Keep `.env` private; Git ignores it. This local checkout already has a random `SESSION_SECRET`. On a fresh clone, copy `.env.example` to `.env` and replace its example values before starting the API.
+3. From a terminal in `server/`, run `npm install`, then `npm run seed`. The server also creates missing tables and seeds an empty catalog when it starts.
+4. Start the API in one terminal from `server/` with `npm run dev`.
+5. Start the storefront in a second terminal from `client/` with `npm install` then `npm run dev`.
 
-```
-index.html
-css/styles.css
-```
+The Vite development server forwards `/api` requests to Express at port 3001. In production Express serves both the React build and API from one origin, so the sign-in session cookie works with the storefront.
 
-## How it meets the brief
+## API routes
 
-- **Semantic landmarks:** `header`, `nav`, `main`, `footer`, plus labelled `section`s. One `h1`.
-- **Working nav:** every link points at a real `id` on the page. A skip link comes first in tab order.
-- **CSS:** `box-sizing: border-box` on `*, *::before, *::after`. Colors, fonts, and spacing live in custom properties on `:root`.
-- **Flexbox:** header and nav, hero buttons, the spine shelf, book card layout, event rows, footer.
-- **Grid:** the book grid (2 columns on phones, 3 on tablets, 6 on desktop; 4 for staff picks), the hero layout, and the events list.
-- **No horizontal scroll:** tested at 320, 360, 390, 768, 1024, 1280, and 1920 px wide. Grid tracks use `minmax(0, 1fr)` and long words wrap.
+- `GET /api/books` returns books and staff notes from Postgres as JSON.
+- `GET /api/events` returns shop events.
+- `GET /api/auth/session`, `POST /api/auth/signup`, `POST /api/auth/login`, and `POST /api/auth/logout` manage account sessions.
+- `POST /api/newsletter` saves an email address.
+- `POST /api/orders` stores an authenticated customer’s order request and its line items. It does not collect payment.
 
-## Interaction details
+## Deployment
 
-- Hover, focus, and pressed states on every link and button.
-- Focus ring is 3px and meets 3:1 contrast on both light and dark sections.
-- Tap targets are at least 44px tall.
-- Smooth scrolling and button transitions switch off under `prefers-reduced-motion`.
-- "Hold a copy" and "Save a seat" are `mailto:` links, since there is no backend.
-
-## Placeholder content
-
-Book titles, authors, staff names, prices, events, and the address are invented. Replace them with real stock.
+`render.yaml` describes a Render web service. Connect this repository to Render, provide `DATABASE_URL` from Supabase, and deploy. The Render service builds the Vite client and Express serves it at the same public URL as the API. Render generates `SESSION_SECRET` for the deployed service. Keep the local `.env` out of Git and add secrets through the deployment dashboard.
