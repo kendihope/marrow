@@ -78,7 +78,12 @@ function App() {
     if (typeof window === 'undefined') return {}
     try {
       const saved = JSON.parse(window.localStorage.getItem('marrow-bookbag') || '{}')
-      return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {}
+      if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return {}
+      return Object.fromEntries(
+        Object.entries(saved)
+          .filter(([, quantity]) => Number.isInteger(quantity) && quantity > 0)
+          .map(([title, quantity]) => [title, Math.min(quantity, 10)]),
+      )
     } catch {
       return {}
     }
@@ -158,13 +163,17 @@ function App() {
   }, [cartOpen])
 
   const addToCart = (book) => {
-    setCart((items) => ({ ...items, [book.title]: (items[book.title] || 0) + 1 }))
+    if ((cart[book.title] || 0) >= 10) {
+      setCartMessage(`You can request up to 10 copies of ${book.title}.`)
+      return
+    }
+    setCart((items) => ({ ...items, [book.title]: Math.min((items[book.title] || 0) + 1, 10) }))
     setCartMessage(`${book.title} added to your bag.`)
   }
   const updateQuantity = (title, quantity) => setCart((items) => {
     const updated = { ...items }
     if (quantity < 1) delete updated[title]
-    else updated[title] = quantity
+    else updated[title] = Math.min(quantity, 10)
     return updated
   })
   const checkoutMailto = (() => {
@@ -406,7 +415,7 @@ function App() {
                     <div className="quantity-control" role="group" aria-label={`Quantity of ${book.title}`}>
                       <button type="button" aria-label={`Remove one ${book.title}`} onClick={() => updateQuantity(book.title, quantity - 1)}>−</button>
                       <span>{quantity}</span>
-                      <button type="button" aria-label={`Add one ${book.title}`} onClick={() => updateQuantity(book.title, quantity + 1)}>+</button>
+                      <button type="button" aria-label={`Add one ${book.title}`} disabled={quantity >= 10} onClick={() => updateQuantity(book.title, quantity + 1)}>+</button>
                     </div>
                     <button className="remove-line" type="button" aria-label={`Remove ${book.title} from bag`} onClick={() => updateQuantity(book.title, 0)}>Remove</button>
                   </li>
@@ -451,3 +460,4 @@ function App() {
 }
 
 export default App
+

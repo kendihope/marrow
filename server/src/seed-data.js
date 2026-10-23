@@ -18,7 +18,8 @@ export const products = [
 ]
 
 export const events = [
-  { title: 'Reading: Ines Okafor', subject: 'Ines Okafor reading', description: 'Ines reads from The Salt Orchard, then takes questions.', startsAt: '2026-10-15T19:00:00+03:00', timeLabel: 'Thursday, 7:00 pm' },
-  { title: 'Fiction book club', subject: 'Fiction book club', description: "We're discussing Nine Tides. Bring a question you can't answer.", startsAt: '2026-10-24T11:00:00+03:00', timeLabel: 'Saturday, 11:00 am' },
+  { title: 'Reading: Ines Okafor', subject: 'Ines Okafor reading', description: 'Ines reads from The Salt Orchard, then takes questions.', startsAt: '2026-11-12T19:00:00+03:00', timeLabel: 'Thursday, 7:00 pm' },
+  { title: 'Fiction book club', subject: 'Fiction book club', description: "We're discussing Nine Tides. Bring a question you can't answer.", startsAt: '2026-11-21T11:00:00+03:00', timeLabel: 'Saturday, 11:00 am' },
   { title: 'Nonfiction night', subject: 'Nonfiction night', description: 'Priya Nair talks about How Rooms Remember and the buildings behind it.', startsAt: '2026-11-04T18:30:00+03:00', timeLabel: 'Wednesday, 6:30 pm' },
 ]
+

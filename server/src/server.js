@@ -18,7 +18,7 @@ const port = Number(process.env.PORT || 3001)
 const PgSession = connectPgSimple(session)
 
 if (!process.env.DATABASE_URL) {
-  console.error('Missing DATABASE_URL. Add your Neon connection string to the project root .env file.')
+  console.error('Missing DATABASE_URL. Add your Supabase connection string to the project root .env file.')
   process.exit(1)
 }
 if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
@@ -97,7 +97,7 @@ app.get('/api/events', asyncRoute(async (_req, res) => {
            to_char(starts_at, 'YYYY-MM-DD"T"HH24:MI') AS date_time,
            to_char(starts_at, 'Mon') AS month,
            to_char(starts_at, 'DD') AS day
-    FROM events WHERE active = TRUE ORDER BY starts_at
+    FROM events WHERE active = TRUE AND starts_at >= NOW() ORDER BY starts_at
   `)
   res.json(rows.map((event) => ({
     id: event.id,
@@ -230,3 +230,4 @@ start().catch((error) => {
   console.error('Could not start the server:', error.message)
   process.exit(1)
 })
+
