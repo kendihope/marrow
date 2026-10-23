@@ -1,44 +1,16 @@
-# marrow
-# Marrow Street Books
+# React + Vite
 
-A single-page site for an independent bookstore. Plain HTML5 and CSS3, no frameworks, no build step, no JavaScript.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Sections
+Currently, two official plugins are available:
 
-- **Hero** with a Flexbox shelf of book spines
-- **Fiction** and **Nonfiction**: a product grid of book cards
-- **Staff picks**: the same grid, with a short note from a bookseller on each card
-- **Events**: readings and book clubs
-- **Visit**: address and hours in the footer
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Run it
+## React Compiler
 
-Open `index.html` in a browser. Nothing to install.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Structure
+## Expanding the ESLint configuration
 
-```
-index.html
-css/styles.css
-```
-
-## How it meets the brief
-
-- **Semantic landmarks:** `header`, `nav`, `main`, `footer`, plus labelled `section`s. One `h1`.
-- **Working nav:** every link points at a real `id` on the page. A skip link comes first in tab order.
-- **CSS:** `box-sizing: border-box` on `*, *::before, *::after`. Colors, fonts, and spacing live in custom properties on `:root`.
-- **Flexbox:** header and nav, hero buttons, the spine shelf, book card layout, event rows, footer.
-- **Grid:** the book grid (2 columns on phones, 3 on tablets, 6 on desktop; 4 for staff picks), the hero layout, and the events list.
-- **No horizontal scroll:** tested at 320, 360, 390, 768, 1024, 1280, and 1920 px wide. Grid tracks use `minmax(0, 1fr)` and long words wrap.
-
-## Interaction details
-
-- Hover, focus, and pressed states on every link and button.
-- Focus ring is 3px and meets 3:1 contrast on both light and dark sections.
-- Tap targets are at least 44px tall.
-- Smooth scrolling and button transitions switch off under `prefers-reduced-motion`.
-- "Hold a copy" and "Save a seat" are `mailto:` links, since there is no backend.
-
-## Placeholder content
-
-Book titles, authors, staff names, prices, events, and the address are invented. Replace them with real stock.
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
