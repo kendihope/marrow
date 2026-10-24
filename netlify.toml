@@ -1,0 +1,19 @@
+[build]
+command = "npm --prefix server ci && npm --prefix client ci && npm --prefix client run build"
+publish = "client/dist"
+
+[functions]
+directory = "server/netlify/functions"
+node_bundler = "esbuild"
+external_node_modules = ["express", "pg", "serverless-http", "connect-pg-simple", "express-session", "bcryptjs", "zod", "helmet", "express-rate-limit", "dotenv"]
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/api/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

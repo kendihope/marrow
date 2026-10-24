@@ -1,5 +1,4 @@
 import express from 'express'
-import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
 import helmet from 'helmet'
@@ -14,16 +13,13 @@ dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)) })
 
 const app = express()
 const isProduction = process.env.NODE_ENV === 'production'
-const port = Number(process.env.PORT || 3001)
 const PgSession = connectPgSimple(session)
 
 if (!process.env.DATABASE_URL) {
-  console.error('Missing DATABASE_URL. Add your Supabase connection string to the project root .env file.')
-  process.exit(1)
+  throw new Error('Missing DATABASE_URL. Add your Supabase connection string to the project root .env file.')
 }
 if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
-  console.error('SESSION_SECRET must be at least 32 characters. Add a random secret to the project root .env file.')
-  process.exit(1)
+  throw new Error('SESSION_SECRET must be at least 32 characters. Add a random secret to the project root .env file.')
 }
 
 if (isProduction) app.set('trust proxy', 1)
@@ -209,11 +205,9 @@ app.post('/api/orders', requireUser, asyncRoute(async (req, res) => {
   }
 }))
 
-const clientBuild = path.resolve(fileURLToPath(new URL('../../client/dist', import.meta.url)))
-app.use(express.static(clientBuild))
 app.use((req, res, next) => {
   if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'API route not found.' })
-  res.sendFile(path.join(clientBuild, 'index.html'), (error) => { if (error) next(error) })
+  next()
 })
 
 app.use((error, _req, res, _next) => {
@@ -221,13 +215,4 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: 'Something went wrong. Please try again.' })
 })
 
-const start = async () => {
-  await initializeDatabase()
-  app.listen(port, '0.0.0.0', () => console.log(`Marrow server listening on port ${port}`))
-}
-
-start().catch((error) => {
-  console.error('Could not start the server:', error.message)
-  process.exit(1)
-})
-
+export default app

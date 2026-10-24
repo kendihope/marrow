@@ -5,7 +5,9 @@ A React and Tailwind shop with an Express and PostgreSQL API.
 ## Project map
 
 - `client/` is the React/Vite storefront and its styles.
-- `server/src/server.js` is the Express API and serves the built client in production.
+- `server/src/server.js` defines the Express API routes.
+- `server/src/local.js` starts Express locally and serves the built client for the Render deployment.
+- `server/netlify/functions/api.js` adapts the same Express API to a Netlify Function.
 - `server/db/schema.sql` creates the database tables.
 - `server/src/seed-data.js` is the readable catalog and event seed data.
 - `server/src/seed.js` creates the schema and inserts or updates the starter catalog.
@@ -20,7 +22,7 @@ The database tables are `users`, `products`, `events`, `newsletter_subscribers`,
 4. Start the API in one terminal from `server/` with `npm run dev`.
 5. Start the storefront in a second terminal from `client/` with `npm install` then `npm run dev`.
 
-The Vite development server forwards `/api` requests to Express at port 3001. In production Express serves both the React build and API from one origin, so the sign-in session cookie works with the storefront.
+The Vite development server forwards `/api` requests to Express at port 3001. On Netlify, `netlify.toml` publishes the Vite build and rewrites `/api/*` requests to the Express function on the same origin, so the sign-in session cookie works with the storefront. The Render setup remains available as an alternative in `render.yaml`.
 
 ## API routes
 
@@ -32,4 +34,8 @@ The Vite development server forwards `/api` requests to Express at port 3001. In
 
 ## Deployment
 
-`render.yaml` describes a Render web service. Connect this repository to Render, provide `DATABASE_URL` from Supabase, and deploy. The Render service builds the Vite client and Express serves it at the same public URL as the API. Render generates `SESSION_SECRET` for the deployed service. Keep the local `.env` out of Git and add secrets through the deployment dashboard.
+### Netlify
+
+Connect this repository to Netlify and select the `react-tailwind` branch. The root `netlify.toml` contains the build command, `client/dist` publish directory, function directory, and API rewrite. In Netlify's environment variable settings, add `DATABASE_URL` from Supabase, a random `SESSION_SECRET` of at least 32 characters, and `NODE_ENV=production`. The Supabase schema and starter data must be created with `npm run seed` from `server/` before the first deploy. Keep these secrets in Netlify's dashboard, never in Git.
+
+`render.yaml` remains available if you prefer a single Render web service instead.

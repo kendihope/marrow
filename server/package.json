@@ -4,8 +4,8 @@
   "description": "Express and PostgreSQL API for Marrow Street Books",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js",
+    "dev": "node --watch src/local.js",
+    "start": "node src/local.js",
     "seed": "node src/seed.js"
   },
   "keywords": [],
@@ -21,6 +21,7 @@
     "express-session": "^1.19.0",
     "helmet": "^8.3.0",
     "pg": "^8.23.1",
+    "serverless-http": "^4.0.0",
     "zod": "^4.6.7"
   }
 }
