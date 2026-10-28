@@ -1,12 +1,16 @@
 import fs from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
 import pg from 'pg'
 import { products, events } from './seed-data.js'
 
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
-dotenv.config({ path: path.join(projectRoot, '.env') })
+const workingDirectory = process.cwd()
+const projectRoot = existsSync(path.join(workingDirectory, 'server', 'db', 'schema.sql'))
+  ? workingDirectory
+  : path.resolve(workingDirectory, '..')
+const localEnvPath = path.join(projectRoot, '.env')
+if (existsSync(localEnvPath)) dotenv.config({ path: localEnvPath })
 
 const { Pool } = pg
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL })
