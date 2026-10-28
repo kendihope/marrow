@@ -1,15 +1,11 @@
 import express from 'express'
-import { fileURLToPath } from 'node:url'
-import dotenv from 'dotenv'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import session from 'express-session'
 import connectPgSimple from 'connect-pg-simple'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
-import { pool, initializeDatabase } from './database.js'
-
-dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)) })
+import { pool } from './database.js'
 
 const app = express()
 const isProduction = process.env.NODE_ENV === 'production'
