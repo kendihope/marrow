@@ -46,10 +46,28 @@ CREATE TABLE IF NOT EXISTS orders (
   customer_name VARCHAR(100) NOT NULL,
   customer_email VARCHAR(254) NOT NULL,
   note TEXT NOT NULL DEFAULT '',
-  status TEXT NOT NULL DEFAULT 'requested' CHECK (status IN ('requested', 'confirmed', 'cancelled')),
+  status TEXT NOT NULL DEFAULT 'pending',
   total_cents INTEGER NOT NULL CHECK (total_cents >= 0),
+  intasend_api_ref TEXT,
+  intasend_invoice_id TEXT,
+  paid_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Safe, repeatable migration for databases created before hosted checkout.
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS intasend_api_ref TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS intasend_invoice_id TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS paid_at TIMESTAMPTZ;
+ALTER TABLE orders ALTER COLUMN status SET DEFAULT 'pending';
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check;
+UPDATE orders SET status = 'pending' WHERE status = 'requested';
+UPDATE orders SET status = 'paid' WHERE status = 'confirmed';
+ALTER TABLE orders ADD CONSTRAINT orders_status_check
+  CHECK (status IN ('pending', 'paid', 'payment_failed', 'cancelled'));
+CREATE UNIQUE INDEX IF NOT EXISTS orders_intasend_api_ref_idx
+  ON orders(intasend_api_ref) WHERE intasend_api_ref IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS orders_intasend_invoice_id_idx
+  ON orders(intasend_invoice_id) WHERE intasend_invoice_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS order_items (
   id SERIAL PRIMARY KEY,
