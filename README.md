@@ -82,4 +82,15 @@ Connect this repository to Netlify and select the `react-tailwind` branch. The r
 
 The storefront redirects customers to IntaSend hosted checkout in USD. The checkout page displays the payment methods enabled for the merchant account and currency; the backend does not trust the return redirect. Only a verified `COMPLETE` invoice with the matching order reference, USD currency, and exact amount changes an order to `paid`. Failed or cancelled invoices do not mark an order as paid.
 
+### Integration status / remaining work
+
+The IntaSend checkout implementation is committed and deployed to the `react-tailwind` branch. The Supabase payment migration has been applied to the deployed database, and the Netlify environment variables have been added. IntaSend currently returns a 403 during merchant-dashboard sign-in, so webhook registration and end-to-end sandbox payment verification are **pending**. A checkout redirect is not proof of payment. Do not switch to live credentials until the webhook is registered and a sandbox transaction is verified end to end.
+
+Remaining verification checklist:
+
+1. Restore access to the IntaSend merchant dashboard.
+2. Register the HTTPS endpoint `/api/intasend/webhook` with the configured challenge and the `collection_event` event.
+3. Complete a sandbox checkout and confirm that the matching order changes to `paid` only after server-side invoice verification.
+4. Verify failed/cancelled payment handling and the customer return/polling experience.
+
 For local testing, set `SITE_URL` to the Vite storefront origin (normally `http://localhost:5173`) and configure the IntaSend webhook to reach your public HTTPS development URL. For deployment, use the Netlify site URL. Run a sandbox payment and confirm the webhook updates the order before switching to live keys.
