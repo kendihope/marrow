@@ -197,12 +197,16 @@ app.post('/api/intasend/webhook', asyncRoute(async (req, res) => {
 
   if (event.state === 'COMPLETE') {
     const invoice = await getIntaSendInvoice(event.invoice_id)
-    const paidCents = Math.round(Number(invoice.value) * 100)
+    const amountText = String(invoice.value ?? '')
+    const amountMatch = /^(\\d+)(?:\\.(\\d{1,2}))?$/.exec(amountText)
+    const paidCents = amountMatch
+      ? Number(amountMatch[1]) * 100 + Number((amountMatch[2] || '').padEnd(2, '0'))
+      : NaN
     const isVerified = invoice.state === 'COMPLETE'
-      && invoice.invoice_id === event.invoice_id
+      && String(invoice.invoice_id) === String(event.invoice_id)
       && invoice.api_ref === event.api_ref
       && String(invoice.currency).toUpperCase() === 'USD'
-      && Number.isFinite(paidCents)
+      && Number.isSafeInteger(paidCents)
       && paidCents === order.total_cents
 
     if (!isVerified) {
