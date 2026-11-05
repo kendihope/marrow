@@ -24,6 +24,41 @@ The database tables are `users`, `products`, `events`, `newsletter_subscribers`,
 
 The Vite development server forwards `/api` requests to Express at port 3001. On Netlify, `netlify.toml` publishes the Vite build and rewrites `/api/*` requests to the Express function on the same origin, so the sign-in session cookie works with the storefront. The Render setup remains available as an alternative in `render.yaml`.
 
+## Authentication and customer accounts
+
+Marrow Street Books uses a server-managed, cookie-based account system. Authentication is handled by the Express API; the React storefront never receives or stores password hashes or session secrets.
+
+### Customer flow
+
+- **Create an account:** customers provide a name, email address, and password (8–72 characters). The API normalizes email addresses and hashes passwords with `bcryptjs` at cost factor 12 before storing them in the `users` table.
+- **Sign in:** the API looks up the normalized email, compares the submitted password with the stored bcrypt hash, and creates a fresh session after successful authentication.
+- **Stay signed in:** the session identifier is held in an HTTP-only cookie named `marrow.sid`. Session data is stored server-side in PostgreSQL using `connect-pg-simple` and the `user_sessions` table. The cookie uses `SameSite=Lax`, a seven-day maximum age, and the `Secure` flag in production.
+- **Check the current session:** the storefront calls `GET /api/auth/session` to restore the signed-in customer after a page reload.
+- **Sign out:** `POST /api/auth/logout` destroys the server-side session and clears the session cookie.
+
+### Authentication API
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/api/auth/session` | Return the current customer, or `null` when signed out. |
+| POST | `/api/auth/signup` | Validate details, create the account, and sign the customer in. |
+| POST | `/api/auth/login` | Verify credentials and start a new session. |
+| POST | `/api/auth/logout` | Destroy the current session. |
+
+Signup and login are rate-limited to 20 requests per 15-minute window per client. Passwords are never stored in plain text. The server regenerates the session on successful signup or login to reduce session-fixation risk.
+
+### Protected customer actions
+
+- `POST /api/orders` requires a signed-in customer. The order is associated with the authenticated user ID from the server session, not a user ID supplied by the browser.
+- `GET /api/orders/:id` only returns an order when it belongs to the signed-in customer.
+- Product prices and totals are read and calculated on the server from the database; client-submitted prices are not trusted.
+
+### Authentication configuration and current scope
+
+Set `DATABASE_URL` and a strong, random `SESSION_SECRET` (at least 32 characters) in the deployment environment. Keep the session secret out of source control. On Netlify, the API rewrite keeps the storefront and API on the same site origin so the session cookie can be used by both.
+
+The current account implementation includes email/password signup, sign-in, sign-out, and persistent sessions. Password reset, email verification, social sign-in, and role-based administration are not currently implemented.
+
 ## API routes
 
 - `GET /api/books` returns books and staff notes from Postgres as JSON.
