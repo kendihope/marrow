@@ -1,4 +1,5 @@
 import express from 'express'
+import crypto from 'node:crypto'
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import session from 'express-session'
@@ -156,6 +157,76 @@ app.post('/api/newsletter', asyncRoute(async (req, res) => {
   res.status(201).json({ message: 'Your signup has been saved.' })
 }))
 
+
+function safeStringEqual(left, right) {
+  const a = Buffer.from(String(left || ''))
+  const b = Buffer.from(String(right || ''))
+  return a.length === b.length && crypto.timingSafeEqual(a, b)
+}
+
+async function getIntaSendInvoice(invoiceId) {
+  const secretKey = process.env.INTASEND_SECRET_KEY
+  if (!secretKey) throw new Error('IntaSend secret key is not configured.')
+  const response = await fetch('https://api.intasend.com/api/v1/payment/status/', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${secretKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ invoice_id: invoiceId }),
+  })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(data.message || data.detail || 'Could not verify the IntaSend payment.')
+  return data.invoice || data
+}
+
+app.post('/api/intasend/webhook', asyncRoute(async (req, res) => {
+  const challenge = process.env.INTASEND_WEBHOOK_CHALLENGE
+  if (!challenge) return res.status(503).json({ error: 'Payment webhook is not configured.' })
+  const event = req.body || {}
+  if (!safeStringEqual(event.challenge, challenge)) return res.sendStatus(401)
+  if (event.topic !== 'collection_event') return res.sendStatus(200)
+  if (!event.invoice_id || !event.api_ref) return res.sendStatus(400)
+
+  const { rows } = await pool.query(
+    'SELECT id, total_cents, status, intasend_invoice_id FROM orders WHERE intasend_api_ref = $1',
+    [event.api_ref],
+  )
+  const order = rows[0]
+  if (!order) return res.sendStatus(200)
+
+  if (event.state === 'COMPLETE') {
+    const invoice = await getIntaSendInvoice(event.invoice_id)
+    const paidCents = Math.round(Number(invoice.value) * 100)
+    const isVerified = invoice.state === 'COMPLETE'
+      && invoice.invoice_id === event.invoice_id
+      && invoice.api_ref === event.api_ref
+      && String(invoice.currency).toUpperCase() === 'USD'
+      && Number.isFinite(paidCents)
+      && paidCents === order.total_cents
+
+    if (!isVerified) {
+      console.error('IntaSend payment did not match order', order.id)
+      return res.sendStatus(400)
+    }
+
+    await pool.query(
+      `UPDATE orders
+       SET status = 'paid', intasend_invoice_id = $1, paid_at = COALESCE(paid_at, NOW())
+       WHERE id = $2 AND (intasend_invoice_id IS NULL OR intasend_invoice_id = $1)`,
+      [event.invoice_id, order.id],
+    )
+  } else if (['FAILED', 'CANCELED'].includes(event.state)) {
+    await pool.query(
+      `UPDATE orders SET status = 'payment_failed'
+       WHERE id = $1 AND status <> 'paid'`,
+      [order.id],
+    )
+  }
+
+  res.sendStatus(200)
+}))
+
 app.post('/api/orders', requireUser, asyncRoute(async (req, res) => {
   const input = z.object({
     name: z.string().trim().min(1).max(100),
@@ -165,7 +236,14 @@ app.post('/api/orders', requireUser, asyncRoute(async (req, res) => {
   }).safeParse(req.body)
   if (!input.success) return res.status(400).json({ error: input.error.issues[0]?.message || 'Check the order details.' })
 
+  const publicKey = process.env.INTASEND_PUBLIC_KEY || process.env.INTASEND_PUBLISHABLE_KEY
+  const secretKey = process.env.INTASEND_SECRET_KEY
+  if (!publicKey || !secretKey) {
+    return res.status(503).json({ error: 'Card checkout is not configured yet. Please try again later.' })
+  }
+
   const client = await pool.connect()
+  let order
   try {
     await client.query('BEGIN')
     const productIds = [...new Set(input.data.items.map((item) => item.productId))]
@@ -181,25 +259,83 @@ app.post('/api/orders', requireUser, asyncRoute(async (req, res) => {
     const items = input.data.items.map((item) => ({ ...item, product: productMap.get(item.productId) }))
     const totalCents = items.reduce((total, item) => total + item.product.price_cents * item.quantity, 0)
     const { rows: orders } = await client.query(
-      `INSERT INTO orders (user_id, customer_name, customer_email, note, total_cents)
-       VALUES ($1, $2, $3, $4, $5) RETURNING id, status, total_cents, created_at`,
+      `INSERT INTO orders (user_id, customer_name, customer_email, note, total_cents, status)
+       VALUES ($1, $2, $3, $4, $5, 'pending') RETURNING id, status, total_cents`,
       [req.session.user.id, input.data.name, input.data.email, input.data.note, totalCents],
     )
+    order = orders[0]
+    const apiRef = `marrow-order-${order.id}`
+    await client.query('UPDATE orders SET intasend_api_ref = $1 WHERE id = $2', [apiRef, order.id])
     for (const item of items) {
       await client.query(
         'INSERT INTO order_items (order_id, product_id, quantity, unit_price_cents) VALUES ($1, $2, $3, $4)',
-        [orders[0].id, item.productId, item.quantity, item.product.price_cents],
+        [order.id, item.productId, item.quantity, item.product.price_cents],
       )
     }
     await client.query('COMMIT')
-    res.status(201).json({ order: { id: orders[0].id, status: orders[0].status, total: totalCents / 100 } })
   } catch (error) {
     await client.query('ROLLBACK')
     throw error
   } finally {
     client.release()
   }
+
+  const siteUrl = process.env.URL || process.env.SITE_URL || req.get('origin')
+  if (!siteUrl) {
+    await pool.query("UPDATE orders SET status = 'payment_failed' WHERE id = $1", [order.id])
+    return res.status(503).json({ error: 'The shop return URL is not configured.' })
+  }
+
+  const apiRef = `marrow-order-${order.id}`
+  const customerNames = input.data.name.trim().split(/\\s+/)
+  const firstName = customerNames.shift() || 'Customer'
+  const lastName = customerNames.join(' ') || ' '
+  const checkoutResponse = await fetch('https://api.intasend.com/api/v1/checkout/', {
+    method: 'POST',
+    headers: {
+      'X-IntaSend-Public-API-Key': publicKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      amount: order.total_cents / 100,
+      currency: 'USD',
+      email: input.data.email,
+      first_name: firstName,
+      last_name: lastName,
+      api_ref: apiRef,
+      unique_api_ref: true,
+      redirect_url: `${siteUrl.replace(/\\/$/, '')}/?payment=return&order=${order.id}`,
+      host: siteUrl,
+    }),
+  })
+  const checkout = await checkoutResponse.json().catch(() => ({}))
+  if (!checkoutResponse.ok || !checkout.url || !checkout.id) {
+    await pool.query("UPDATE orders SET status = 'payment_failed' WHERE id = $1 AND status <> 'paid'", [order.id])
+    console.error('IntaSend checkout creation failed:', checkout.message || checkout.detail || checkoutResponse.status)
+    return res.status(502).json({ error: checkout.message || checkout.detail || 'We could not start card checkout. Please try again.' })
+  }
+
+  await pool.query(
+    'UPDATE orders SET intasend_invoice_id = $1 WHERE id = $2',
+    [checkout.id, order.id],
+  )
+  res.status(201).json({
+    order: { id: order.id, status: 'pending', total: order.total_cents / 100 },
+    checkoutUrl: checkout.url,
+  })
 }))
+
+app.get('/api/orders/:id', requireUser, asyncRoute(async (req, res) => {
+  const orderId = Number(req.params.id)
+  if (!Number.isSafeInteger(orderId) || orderId < 1) return res.status(400).json({ error: 'Invalid order reference.' })
+  const { rows } = await pool.query(
+    'SELECT id, status, total_cents, paid_at FROM orders WHERE id = $1 AND user_id = $2',
+    [orderId, req.session.user.id],
+  )
+  if (!rows[0]) return res.status(404).json({ error: 'Order not found.' })
+  res.json({ order: { id: rows[0].id, status: rows[0].status, total: rows[0].total_cents / 100, paidAt: rows[0].paid_at } })
+}))
+
 
 app.use((req, res, next) => {
   if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'API route not found.' })
