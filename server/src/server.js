@@ -204,6 +204,7 @@ app.post('/api/intasend/webhook', asyncRoute(async (req, res) => {
       : NaN
     const isVerified = invoice.state === 'COMPLETE'
       && String(invoice.invoice_id) === String(event.invoice_id)
+      && (!order.intasend_invoice_id || String(order.intasend_invoice_id) === String(event.invoice_id))
       && invoice.api_ref === event.api_ref
       && String(invoice.currency).toUpperCase() === 'USD'
       && Number.isSafeInteger(paidCents)
