@@ -71,7 +71,8 @@ function App() {
   const [authError, setAuthError] = useState('')
   const [authBusy, setAuthBusy] = useState(false)
   const [orderError, setOrderError] = useState('')
-  const [savedOrderId, setSavedOrderId] = useState(null)
+  const [orderBusy, setOrderBusy] = useState(false)
+  const [paymentNotice, setPaymentNotice] = useState('')
   const [cartOpen, setCartOpen] = useState(false)
   const [checkoutStep, setCheckoutStep] = useState('bag')
   const [cart, setCart] = useState(() => {
@@ -90,7 +91,6 @@ function App() {
   })
   const [cartMessage, setCartMessage] = useState('')
   const [checkoutDetails, setCheckoutDetails] = useState({ name: '', email: '', note: '' })
-  const [orderReady, setOrderReady] = useState(false)
   const books = {
     fiction: allBooks.filter((book) => book.category === 'fiction'),
     nonfiction: allBooks.filter((book) => book.category === 'nonfiction'),
@@ -119,6 +119,42 @@ function App() {
       setAuthUser(user)
       if (user) setCheckoutDetails((current) => ({ ...current, name: current.name || user.name, email: current.email || user.email }))
     }).catch(() => {})
+    return () => { active = false }
+  }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('payment') !== 'return') return undefined
+    const orderId = params.get('order')
+    if (!orderId) {
+      setPaymentNotice('We could not identify the returned order. Please contact the shop before trying again.')
+      return undefined
+    }
+    let active = true
+    const checkPayment = async () => {
+      for (let attempt = 0; attempt < 10 && active; attempt += 1) {
+        try {
+          const { order } = await apiRequest(`/api/orders/${encodeURIComponent(orderId)}`)
+          if (!active) return
+          if (order.status === 'paid') {
+            setPaymentNotice(`Payment confirmed — order #${order.id} is paid. Thank you for supporting the shop.`)
+            setCart({})
+            break
+          }
+          if (order.status === 'payment_failed' || order.status === 'cancelled') {
+            setPaymentNotice(`Payment for order #${order.id} was not completed. Your bag is still here if you’d like to try again.`)
+            break
+          }
+          setPaymentNotice('Your payment is being confirmed. This can take a few moments…')
+        } catch {
+          if (active) setPaymentNotice('We’re checking your payment. Please refresh this page in a moment.')
+          break
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 2000))
+      }
+      if (active) window.history.replaceState({}, '', window.location.pathname)
+    }
+    checkPayment()
     return () => { active = false }
   }, [])
 
@@ -176,22 +212,7 @@ function App() {
     else updated[title] = Math.min(quantity, 10)
     return updated
   })
-  const checkoutMailto = (() => {
-    const lines = cartLines.map(({ book, quantity }) => `${quantity} × ${book.title} — $${book.price * quantity}`).join('\n')
-    const body = [
-      savedOrderId ? `Order request: #${savedOrderId}` : '',
-      `Name: ${checkoutDetails.name}`,
-      `Email: ${checkoutDetails.email}`,
-      '',
-      'Books requested:',
-      lines,
-      '',
-      `Subtotal: $${subtotal}`,
-      checkoutDetails.note ? `Note: ${checkoutDetails.note}` : '',
-    ].filter(Boolean).join('\n')
-    const subject = savedOrderId ? `Book order request #${savedOrderId}` : 'Book order request'
-    return `mailto:books@marrowstreet.example?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-  })()
+
 
   const openAuth = (mode = 'login') => {
     setAuthMode(mode)
@@ -230,24 +251,25 @@ function App() {
   const handleCheckoutSubmit = async (event) => {
     event.preventDefault()
     setOrderError('')
-    setSavedOrderId(null)
     if (!authUser) {
-      setOrderError('Sign in to save this order request.')
+      setOrderError('Sign in to continue to secure checkout.')
       openAuth('login')
       return
     }
+    setOrderBusy(true)
     try {
-      const { order } = await apiRequest('/api/orders', {
+      const { checkoutUrl } = await apiRequest('/api/orders', {
         method: 'POST',
         body: JSON.stringify({
           ...checkoutDetails,
           items: cartLines.map(({ book, quantity }) => ({ productId: book.id, quantity })),
         }),
       })
-      setSavedOrderId(order.id)
-      setOrderReady(true)
+      if (!checkoutUrl) throw new Error('The secure checkout link was not returned. Please try again.')
+      window.location.assign(checkoutUrl)
     } catch (error) {
       setOrderError(error.message)
+      setOrderBusy(false)
     }
   }
 
@@ -291,7 +313,7 @@ function App() {
           <div className="account-control">
             {authUser ? <><span className="account-name">{authUser.name}</span><button className="account-button" type="button" onClick={handleSignOut}>Sign out</button></> : <button className="account-button" type="button" onClick={() => openAuth('login')}>Sign in</button>}
           </div>
-          <button ref={bagButtonRef} className="bag-button" type="button" onClick={() => { setCheckoutStep('bag'); setOrderReady(false); setCartOpen(true) }} aria-label={`Open shopping bag, ${cartCount} ${cartCount === 1 ? 'book' : 'books'}`}>
+          <button ref={bagButtonRef} className="bag-button" type="button" onClick={() => { setCheckoutStep('bag'); ; setCartOpen(true) }} aria-label={`Open shopping bag, ${cartCount} ${cartCount === 1 ? 'book' : 'books'}`}>
             <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h14l1 12H4L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
             <span>Bag</span><b aria-live="polite" aria-atomic="true">{cartCount}</b>
           </button>
@@ -299,6 +321,7 @@ function App() {
       </header>
 
       <main id="main" inert={cartOpen || authOpen}>
+        {paymentNotice && <p className="api-notice" role="status">{paymentNotice}</p>}
         <section className="hero" aria-labelledby="hero-title">
           <div className="site-shell hero__inner">
             <div className="hero__copy">
@@ -428,14 +451,14 @@ function App() {
             <button className="checkout-back" type="button" onClick={() => { setCheckoutStep('bag'); setOrderReady(false) }}>← Back to your bag</button>
             <p className="section-kicker">Almost there</p>
             <h2 id="cart-title">Order details</h2>
-            <p className="checkout-explainer">This checkout sends an order request to the shop. The bookseller will confirm availability, pickup, and payment by email.</p>
+            <p className="checkout-explainer">Your order total is charged securely in USD. You’ll be redirected to IntaSend to complete card payment. Your order is confirmed only after payment is verified.</p>
             <form className="checkout-form" onSubmit={handleCheckoutSubmit}>
               <label>Full name<input required autoComplete="name" value={checkoutDetails.name} onChange={(event) => { setCheckoutDetails({ ...checkoutDetails, name: event.target.value }); setOrderReady(false) }} /></label>
               <label>Email address<input type="email" required autoComplete="email" value={checkoutDetails.email} onChange={(event) => { setCheckoutDetails({ ...checkoutDetails, email: event.target.value }); setOrderReady(false) }} /></label>
               <label>Note for the bookseller <span>(optional)</span><textarea rows="3" value={checkoutDetails.note} onChange={(event) => { setCheckoutDetails({ ...checkoutDetails, note: event.target.value }); setOrderReady(false) }} /></label>
               <div className="checkout-total"><span>{cartCount} {cartCount === 1 ? 'book' : 'books'}</span><strong>${subtotal.toFixed(2)}</strong></div>
               {orderError && <p className="form-error" role="alert">{orderError}</p>}
-              {!orderReady ? <button className="button button--solid cart-continue" type="submit">{authUser ? 'Save order request' : 'Sign in to request these books'} <span aria-hidden="true">→</span></button> : <div className="order-ready" role="status"><p>Your order request #{savedOrderId} is saved. Open your email app to send the shop a copy.</p><a className="button button--solid cart-continue" href={checkoutMailto}>Send order request <span aria-hidden="true">↗</span></a></div>}
+              <button className="button button--solid cart-continue" type="submit" disabled={orderBusy}>{orderBusy ? 'Preparing secure checkout…' : authUser ? 'Continue to card payment' : 'Sign in to continue'} <span aria-hidden="true">→</span></button>
             </form>
           </>}
         </section>
