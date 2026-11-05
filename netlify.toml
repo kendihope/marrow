@@ -1,0 +1,18 @@
+[build]
+command = "npm --prefix server ci && npm --prefix client ci && npm --prefix client run build"
+publish = "client/dist"
+
+[functions]
+directory = "server/netlify/functions"
+node_bundler = "esbuild"
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/api/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

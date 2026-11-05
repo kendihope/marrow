@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: marrow-books
+    runtime: node
+    plan: free
+    healthCheckPath: /api/health
+    buildCommand: npm --prefix server ci && npm --prefix client ci && npm --prefix client run build
+    startCommand: npm --prefix server start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+
