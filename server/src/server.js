@@ -198,7 +198,7 @@ app.post('/api/intasend/webhook', asyncRoute(async (req, res) => {
   if (event.state === 'COMPLETE') {
     const invoice = await getIntaSendInvoice(event.invoice_id)
     const amountText = String(invoice.value ?? '')
-    const amountMatch = /^(\\d+)(?:\\.(\\d{1,2}))?$/.exec(amountText)
+    const amountMatch = /^(\d+)(?:\.(\d{1,2}))?$/.exec(amountText)
     const paidCents = amountMatch
       ? Number(amountMatch[1]) * 100 + Number((amountMatch[2] || '').padEnd(2, '0'))
       : NaN
@@ -291,7 +291,7 @@ app.post('/api/orders', requireUser, asyncRoute(async (req, res) => {
   }
 
   const apiRef = `marrow-order-${order.id}`
-  const customerNames = input.data.name.trim().split(/\\s+/)
+  const customerNames = input.data.name.trim().split(/\s+/)
   const firstName = customerNames.shift() || 'Customer'
   const lastName = customerNames.join(' ') || ' '
   const checkoutResponse = await fetch('https://api.intasend.com/api/v1/checkout/', {
